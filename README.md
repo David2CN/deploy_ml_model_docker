@@ -26,13 +26,18 @@ You can also access the server with a curl command, like so:
 ```bash
 curl -X 'POST' http://localhost/predict \
 -H 'Content-Type: application/json' \
--d '{
-    "sepal_length":2.5,
-    "sepal_width":1.5,
-    "petal_length":4.5,
-    "petal_width":0.5
+-d '{ "batches": [
+    [
+        0.5,
+        0.1,
+        1.2,
+        2.4
+    ]
+]
 }'
 ```
+The list in the curl command above should follow this ordering: <br>
+[sepal_length, sepal_width, petal_length, petal_width]
 
 *** this project was inspired by and derives from an ungraded lab in this Coursera course: [Deploying Machine Learning Models in Production](https://www.coursera.org/learn/deploying-machine-learning-models-in-production).  
 
