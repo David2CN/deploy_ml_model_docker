@@ -1,17 +1,20 @@
 import pickle
-import uvicorn
 import numpy as np
 from fastapi import FastAPI
-from pydantic import BaseModel
+from typing import List
+from pydantic import BaseModel, conlist
 
 
 app = FastAPI(title="Classify Flowers")
 
+
 class Flower(BaseModel):
-    sepal_length: float
-    sepal_width: float
-    petal_length: float
-    petal_width: float
+    batches: List[conlist(item_type=float, min_items=4, max_items=4)]
+
+
+@app.get("/")
+def index():
+    return {"message": "server started successfully!"}
 
 
 @app.on_event("startup")
@@ -23,16 +26,12 @@ def load_clf():
 
 @app.post("/predict")
 def predict(flower: Flower):
-    data_point = np.array([[
-        flower.sepal_length,
-        flower.sepal_width,
-        flower.petal_length,
-        flower.petal_width
-    ]])
-
-    pred = clf.predict(data_point).tolist()[0]
+    batches = flower.batches
+    batches = np.array(batches)
+    pred = clf.predict(batches).tolist()
     return {"prediction": pred}
 
 
 if __name__ == "__main__":
-    uvicorn.run(app)
+    import uvicorn
+    uvicorn.run(app, port=80)
